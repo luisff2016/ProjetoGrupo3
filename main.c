@@ -4,26 +4,31 @@
 #include <conio.h>
 #include <string.h>
 
+//Limites das Variaveis
+#define MAX 1000        //Quantidade Maxima de Contatos
+#define tNome 31        //Quantidade Maxima de Caracteres do Nome
+#define tSnome 31       //Quantidade Maxima de Caracteres do Sobrenome
+#define tFone 20        //Quantidade Maxima de Caracteres do Telefone
+#define tEmail 61       //Quantidade Maxiam de Caracteres do Email
+
+
 /* PROJETO DE PROGRAMAÇÃO IMPERATIVA */
 /*  -Luis Fernando Feitosa.
     -Wendhio Thalison Neres dos Santos.
     -Rodrigo Oliveira Santos. */
 
 /*definindo variavel para registro */
-int nroMax=1000;
+
 int total;
-
-typedef struct
-{
+typedef struct{
 int ordem;
-char nome[31]; /* nao pode ser vazio*/
-char sobrenome[31];
-char telefone[3][20]; /* modelo: '+01 (23) 45678 9012' */
-char email[3][61]; /* 'modelo_usu.1234567890abcdefghijklmnopqrstuvwxyz@local.aaa.bb' */
+char nome[tNome]; /* nao pode ser vazio*/
+char sobrenome[tSnome];
+char telefone[3][tFone]; /* modelo: '+01 (23) 45678 9012' */
+char email[3][tEmail]; /* 'modelo_usu.1234567890abcdefghijklmnopqrstuvwxyz@local.aaa.bb' */
 } TCONTATO;
-
 TCONTATO fone;
-TCONTATO agenda[1000];
+TCONTATO agenda[MAX];
 
 /* funcoes auxiliares*/
 void menu();
@@ -44,73 +49,70 @@ int tamNome(int i);
 void ordenacao();
 
 /* funcao principal*/
-int main()
-{
+int main(){
     setlocale(LC_ALL, "portuguese");
     addMenu();
     return 0;
 }
 
 /* exibe menu de opcoes */
-void menu()
-{
+void menu(){
 printf("\t============================================\n");
 printf("\t\t\t AGENDA TELEFONICA \t\t\n");
 printf("\t============================================\n");
 printf ("\t1. Adicionar contato \n");
 printf ("\t2. Apagar contato \n");
 printf ("\t3. Atualizar contato \n");
-printf ("\t4. Navegar na agenda \n");
+printf ("\t4. Ver contatos da agenda \n");
 printf ("\t\t0. Sair do programa\n");
 }
 
 /* Menu de seleção */
-int addMenu()
-{
+int addMenu(){
     int opcao;
-    menu();
-    printf("\nDigite a opção desejada do MENU\n\n");
-    scanf("%d", &opcao);
-    while (opcao != 0)
-        {
-            switch (opcao)
-            {
-                case 0: break;
-                case 1: adicionaContato(); break;
-                case 2: apagaContato(); break;
-                case 3: atualizaContato(); break;
-                case 4: veAgenda(); break;
-
-                default: {
-                    system("cls");
-                    printf("\n DIGITE UMA OPCAO VALIDA!\n\n");
-                    } break;
+    do {
+        system("cls");
+        menu();
+        printf("\nDigite a opção desejada do MENU\n\n");
+        scanf("%d", &opcao);
+        switch (opcao){
+            case 0: break;
+            case 1: adicionaContato(); break;
+            case 2: apagaContato(); break;
+            case 3: atualizaContato(); break;
+            case 4: veAgenda(); break;
+            default:{
+                system("cls");
+                printf("\n DIGITE UMA OPCAO VALIDA!\n\n");
+                } break;
             }
-            menu();
-            printf("\n Digite a opção desejada do MENU\n\n");
-            scanf("%d", &opcao);
-        }
+    } while(opcao != 0);
     return 0;
 }
 
-void adicionaContato()
-{
-    printf("Digite o nome:\n");
-    scanf("%s", &fone.nome);
+void adicionaContato(){
+    fone.nome[0]='\0';
+    setbuf(stdin, NULL);
+    do {
+        system("cls");
+        printf("Digite o nome:\n");
+        fgets(fone.nome, tNome, stdin); //gets(fone.nome);
+    } while(fone.nome[0]=='\0' || fone.nome[0]=='\n');
     int i = buscaContato();
     if ( i != -1 )
         printf("\nMatrícula já cadastrada\n");
-    else if (total == nroMax)
+    else if (total == MAX)
         printf("\nNúmero máximo de estudantes ultrapassado\n");
-    else {  dadosContato();
-            gravaContato(i);
-            system("cls");
-            printf("\nCadastrado realizado com sucesso\n\n\n"); }
+    else {
+        dadosContato();
+        gravaContato(total);
+        system("cls");
+        printf("\nCadastrado realizado com sucesso\n\n\n");
+        }
 }
 
 /* confere se a matricula ja foi registrada*/
-int buscaContato()
-{
+int buscaContato(){
     int i;
     for (i=0; i<total ; i++)
     if (agenda[i].nome == fone.nome)
@@ -120,34 +122,28 @@ int buscaContato()
 
 void dadosContato(){
     int i;
-    fone.ordem = ++total;
-    printf("\nDigite o nome: \n");
-    fflush(stdin);
-    gets(fone.nome);
     printf("\nDigite o sobrenome: \n");
     fflush(stdin);
-    gets(fone.sobrenome);
+    gets(fone.sobrenome); //fgets(fone.sobrenome,tSnome,stdin);
     for (i=0; i<3; i++){
-        printf("\nDigite o telefone %d: \n", i );
-        scanf("%s", &fone.telefone[i]);
-        printf("\nDigite o email %d: \n", i );
-        scanf("%s", &fone.email[i]);
+        printf("\nDigite o telefone %d: \n", i+1 );
+        gets(fone.telefone[i]);
+        printf("\nDigite o email %d: \n", i+1 );
+        gets(fone.email[i]);
     }
 }
 
-void gravaContato(int i)
-{
-    agenda[i] = fone;
+void gravaContato(int i){
+    agenda[total] = fone;
     total++;
 }
 
 
-void veContato(int i)
-{
-        int j;
-        printf("\nOrdem: %d . ", agenda[i].ordem);
-        printf("Contato: %s ,", agenda[i].sobrenome);
-        printf("%s .\n", agenda[i].nome);
+void veContato(int i){
+        register int j;
+        //printf("\nOrdem: %d . ", agenda[i].ordem);
+        printf("Contato:%s ", agenda[i].nome);
+        printf("%s.\n", agenda[i].sobrenome);
         for (j=0; j<3; j++){
             printf("Fone%d: %s . ", j, agenda[i].telefone[j]);
             printf("Email%d: %s .\n", j, agenda[i].email[j]);
@@ -158,8 +154,7 @@ void veContato(int i)
 
 
 
-void veAgenda()
-{
+void veAgenda(){
     int i;
     for (i=0 ; i<total ; i++)
         veContato(i);
@@ -167,8 +162,7 @@ void veAgenda()
     printf("\nTodos os registros foram mostrados.\n\n\n");
 }
 
-void apagaContato()
-{
+void apagaContato(){
     int j;
     buscaContato();
     printf("\nQual registro deseja apagar:\n\n");
@@ -181,18 +175,16 @@ void apagaContato()
     printf("\n Registro nao existe\n\n\n");
 }
 
-
-void atualizaContato()
-{
+void atualizaContato(){
     int i, checkalt=0;
     printf("\n Qual matricula deseja alterar?\n\n");
     scanf("%d", &fone.ordem);
-
     for (i=0; i<total ; i++){
         if (agenda[i].nome == fone.nome) {
             dadosContato();
             agenda[i]=fone;
-            checkalt++; }
+            checkalt++;
+            }
         }
     if(checkalt==0){
         system("cls");
@@ -204,8 +196,7 @@ void atualizaContato()
     }
 }
 
-/*void verMatAluno()
-{
+/*void verMatAluno(){
     int i = buscaContato();
     printf("\n Qual matricula deseja visualisar?\n");
     scanf("%d", &fone.ordem);
@@ -227,8 +218,7 @@ void atualizaContato()
 
 /* Rotina de ordenação */
 /*
-void ordenacao()
-{
+void ordenacao(){
     int i,j;
     for(i = 1; i<total; i++)
         for (j = 0; j<total-1 ; j++)
@@ -244,8 +234,7 @@ void ordenacao()
 }
 */
 
-/*void verMedia()
-{
+/*void verMedia(){
     int i = buscaEstudante(est);
     printf("\n Digite a matrícula do aluno.\n");
     scanf("%d", &est.cpf);
@@ -263,8 +252,7 @@ void ordenacao()
         printf("\n Registro inexistente\n\n\n"); }
 }*/
 
-/*void ordemMedia()
-{
+/*void ordemMedia(){
     int i,h;
     for (i=0; i<codCadastro-1; i++)
     {
@@ -280,8 +268,7 @@ void ordenacao()
     }
 }*/
 
-/*void maiorMedia()
-{
+/*void maiorMedia(){
     int i = codCadastro-1;
     ordemMedia();
 
@@ -289,15 +276,13 @@ void ordenacao()
     printf ("\nAluno %s tem a maior media: %.2f \n\n\n", aluno[i].nome, aluno[i].media);
 }
 
-void menorMedia()
-{
+void menorMedia(){
     ordemMedia();
     system("cls");
     printf ("\nAluno %s tem a menor media: %.2f \n\n\n", aluno[0].nome, aluno[0].media);
 }*/
 
-/*void encNome()
-{
+/*void encNome(){
     int i, tamStr, check=0;
     printf("\n Digite nome do aluno:\n");
     fflush(stdin);
@@ -319,8 +304,7 @@ void menorMedia()
     }
 }*/
 
-/*int tamNome(int i)
-{
+/*int tamNome(int i){
     int j=0;
     while (agenda[i].nome[j] != '\0')
         j++;
@@ -328,8 +312,7 @@ void menorMedia()
 }*/
 
 /*
-void verMediaOrdem()
-{
+void verMediaOrdem(){
     ordemMedia();
     verTodos();
 }
