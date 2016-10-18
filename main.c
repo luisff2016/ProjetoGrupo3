@@ -63,7 +63,7 @@ printf("\t============================================\n");
 printf ("\t1. Adicionar contato \n");
 printf ("\t2. Apagar contato \n");
 printf ("\t3. Atualizar contato \n");
-printf ("\t4. Ver contatos da agenda \n");
+printf ("\t4. Ver todos os contatos da agenda \n");
 printf ("\t\t0. Sair do programa\n");
 }
 
@@ -93,21 +93,35 @@ int addMenu(){
 void adicionaContato(){
     fone.nome[0]='\0';
     setbuf(stdin, NULL);
+    system("cls");
     do {
-        system("cls");
-        printf("Digite o nome:\n");
-        fgets(fone.nome, tNome, stdin); //gets(fone.nome);
+        printf("Digite o primeiro nome:\n");
+        gets(fone.nome);
     } while(fone.nome[0]=='\0' || fone.nome[0]=='\n');
+    fone.sobrenome[0]='\0';
+    setbuf(stdin, NULL);
+    do {
+        printf("Digite o sobrenome:\n");
+        gets(fone.sobrenome);
+    } while(fone.sobrenome[0]=='\0' || fone.sobrenome[0]=='\n');
     int i = buscaContato();
-    if ( i != -1 )
-        printf("\nMatrícula já cadastrada\n");
-    else if (total == MAX)
-        printf("\nNúmero máximo de estudantes ultrapassado\n");
+    if ( i != -1 ) {
+        system("cls");
+        printf("\nContato já registrado\n\n");
+        printf("(pressione qualquer tecla)\n\n");
+        getch(); }
+    else if (total == MAX){
+        system("cls");
+        printf("\nNúmero máximo de contatos ultrapassado\n\n");
+        printf("(pressione qualquer tecla)\n\n");
+        getch(); }
     else {
         dadosContato();
         gravaContato(total);
         system("cls");
-        printf("\nCadastrado realizado com sucesso\n\n\n");
+        printf("\nContato registrado com sucesso\n\n");
+        printf("(pressione qualquer tecla)\n\n");
+        getch();
         }
 }
 
@@ -115,19 +129,17 @@ void adicionaContato(){
 int buscaContato(){
     int i;
     for (i=0; i<total ; i++)
-    if (agenda[i].nome == fone.nome)
+    if (strcmp(agenda[i].nome, fone.nome) == 0 && strcmp(agenda[i].sobrenome, fone.sobrenome) == 0)
         return i;
     return -1;
 }
 
 void dadosContato(){
     int i;
-    printf("\nDigite o sobrenome: \n");
-    fflush(stdin);
-    gets(fone.sobrenome); //fgets(fone.sobrenome,tSnome,stdin);
     for (i=0; i<3; i++){
         printf("\nDigite o telefone %d: \n", i+1 );
-        gets(fone.telefone[i]);
+        gets(fone.telefone[i]); }
+    for (i=0; i<3; i++){
         printf("\nDigite o email %d: \n", i+1 );
         gets(fone.email[i]);
     }
@@ -142,12 +154,12 @@ void gravaContato(int i){
 void veContato(int i){
         register int j;
         //printf("\nOrdem: %d . ", agenda[i].ordem);
-        printf("Contato:%s ", agenda[i].nome);
-        printf("%s.\n", agenda[i].sobrenome);
-        for (j=0; j<3; j++){
-            printf("Fone%d: %s . ", j, agenda[i].telefone[j]);
-            printf("Email%d: %s .\n", j, agenda[i].email[j]);
-        }
+        printf("\nNome: %s ", agenda[i].nome);
+        printf("\nSobrenome: %s\n", agenda[i].sobrenome);
+        for (j=0; j<3; j++)
+            printf("Fone %d: %s  \n", j+1, agenda[i].telefone[j]);
+        for (j=0; j<3; j++)
+            printf("Email %d: %s \n", j+1, agenda[i].email[j]);
         printf("(pressione qualquer tecla)\n\n");
         getch();
 }
@@ -159,28 +171,34 @@ void veAgenda(){
     for (i=0 ; i<total ; i++)
         veContato(i);
     system("cls");
-    printf("\nTodos os registros foram mostrados.\n\n\n");
+    printf("\nTodos os contatos foram mostrados.\n\n");
+    printf("(pressione qualquer tecla)\n\n");
+    getch();
 }
 
 void apagaContato(){
     int j;
     buscaContato();
-    printf("\nQual registro deseja apagar:\n\n");
+    printf("\nQual contato deseja apagar:\n\n");
     scanf("%d", &fone.ordem);
     agenda[j]=agenda[total-1];
     total--;
     system("cls");
-    printf("\n Registro apagado \n\n\n");
+    printf("\ncontato apagado \n\n\n");
     system("cls");
-    printf("\n Registro nao existe\n\n\n");
+    printf("\ncontato nao existe\n\n\n");
 }
 
 void atualizaContato(){
     int i, checkalt=0;
-    printf("\n Qual matricula deseja alterar?\n\n");
-    scanf("%d", &fone.ordem);
+    printf("\nDigite o primeiro nome do contato:\n");
+    fflush(stdin);
+    gets(fone.nome);
+    printf("\nDigite o sobrenome do contato:\n");
+    fflush(stdin);
+    gets(fone.sobrenome);
     for (i=0; i<total ; i++){
-        if (agenda[i].nome == fone.nome) {
+        if (strcmp(agenda[i].nome, fone.nome) == 0 && strcmp(agenda[i].sobrenome, fone.sobrenome) == 0) {
             dadosContato();
             agenda[i]=fone;
             checkalt++;
@@ -188,11 +206,15 @@ void atualizaContato(){
         }
     if(checkalt==0){
         system("cls");
-        printf("\nEssa matrícula não existe.\n\n\n");
+        printf("\nEsse contato não existe.\n\n");
+        printf("(pressione qualquer tecla)\n\n");
+        getch();
     }
     else {
         system("cls");
-        printf("\nRegistro alterado com sucesso.\n\n\n");
+        printf("\nContato alterado com sucesso.\n\n");
+        printf("(pressione qualquer tecla)\n\n");
+        getch();
     }
 }
 
