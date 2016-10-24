@@ -4,12 +4,12 @@
 #include <conio.h>
 #include <string.h>
 
-//Limites das Variaveis
-#define MAX 1000        //Quantidade Maxima de Contatos
-#define tNome 31        //Quantidade Maxima de Caracteres do Nome
-#define tSnome 31       //Quantidade Maxima de Caracteres do Sobrenome
-#define tFone 20        //Quantidade Maxima de Caracteres do Telefone
-#define tEmail 61       //Quantidade Maxiam de Caracteres do Email
+/*Limites das Variaveis*/
+#define TAM_MAX 1000       /*Quantidade maxima de Contatos*/
+#define TAM_NOME 31        /*Quantidade maxima de Caracteres do Nome*/
+#define TAM_SOBRENOME 31   /*Quantidade maxima de Caracteres do Sobrenome*/
+#define TAM_FONE 20        /*Quantidade maxima de Caracteres do Telefone*/
+#define TAM_EMAIL 61       /*Quantidade maxima de Caracteres do Email*/
 
 
 /* PROJETO DE PROGRAMAÇÃO IMPERATIVA */
@@ -18,54 +18,54 @@
     -Rodrigo Oliveira Santos. */
 
 /*definindo variavel para registro */
-
 typedef struct{
 int ordem;
-char nome[tNome]; /* nao pode ser vazio*/
-char sobrenome[tSnome];
-char telefone[3][tFone]; /* modelo: '+01 (23) 45678 9012' */
-char email[3][tEmail]; /* 'modelo_usu.1234567890abcdefghijklmnopqrstuvwxyz@local.aaa.bb' */
+char nome[TAM_NOME]; /* nao pode ser vazio*/
+char sobrenome[TAM_SOBRENOME];
+char telefone[3][TAM_FONE]; /* modelo: '+01 (23) 45678 9012' */
+char email[3][TAM_EMAIL]; /* 'modelo_usu.1234567890abcdefghijklmnopqrstuvwxyz@local.aaa.bb' */
 } TCONTATO;
 TCONTATO fone;
-TCONTATO agenda[MAX];
+TCONTATO agenda[TAM_MAX];
 
 int total=0;
 FILE* agendadados;
 FILE* ncontatos;
 
 /* funcoes auxiliares*/
-void menu();
-int addMenu();
-void adicionaContato();
-int buscaContato();
-void dadosContato();
-void gravaContato(int i);
-void veAgenda();
-void salvarDados();
-void carregarDados();
-
-
-void leContato();
-void veContato(int i);
-void encNomeSobrenome();
-void encNome();
-void encSobrenome();
-void apagaContato();
-void atualizaContato();
-int tamNome(int i);
-void ordenacao();
+void Menu();
+int AddMenu();
+void AdicionaContato();
+int BuscaContato();
+void DadosContato();
+void GravaContato(int i);
+void VerAgenda();
+void SalvarDados();
+void CarregarDados();
+void LerContato();
+void VerContato(int i);
+void EncNomeSobrenome();
+void EncNome();
+void EncSobrenome();
+void ApagaContato();
+void AtualizaContato();
+int TamNome(int i);
+void Ordenacao();
 
 /* funcao principal*/
 int main(){
     setlocale(LC_ALL, "portuguese");
-    carregarDados();
-    addMenu();
-    salvarDados();      // Além de ser executado aqui ao fim do programa, também é executado na função 'addMenu'
-    return 0;           // salvando os dados sempre que o programa volta para o menu, evitando perda de dados
-}                       // no caso do usuario fechar o programa de forma inadequada.
+    CarregarDados();
+    AddMenu();
+    SalvarDados();
+    /*Além de ser executado aqui ao fim do programa, também é executado na função 'addMenu'
+    salvando os dados sempre que o programa volta para o menu, evitando perda de dados
+    no caso do usuario fechar o programa de forma inadequada.*/
+    return 0;
+}
 
 /* exibe menu de opcoes */
-void menu(){
+void Menu(){
 printf("\t============================================\n");
 printf("\t\t\t AGENDA TELEFONICA \t\t\n");
 printf("\t============================================\n");
@@ -80,34 +80,34 @@ printf ("\t\t0. Sair do programa e salvar os contatos\n");
 }
 
 /* Menu de seleção */
-int addMenu(){
+int AddMenu(){
     int opcao;
     do {
         system("cls");
-        menu();
+        Menu();
         printf("\nDigite a opção desejada do MENU\n\n");
         scanf("%d", &opcao);
         switch (opcao){
             case 0: break;
-            case 1: adicionaContato(); break;
-            case 2: apagaContato(); break;
-            case 3: atualizaContato(); break;
-            case 4: veAgenda(); break;
-            case 5: encNomeSobrenome(); break;
-            case 6: encNome(); break;
-            case 7: encSobrenome(); break;
+            case 1: AdicionaContato(); break;
+            case 2: ApagaContato(); break;
+            case 3: AtualizaContato(); break;
+            case 4: VerAgenda(); break;
+            case 5: EncNomeSobrenome(); break;
+            case 6: EncNome(); break;
+            case 7: EncSobrenome(); break;
             default:{
                 system("cls");
                 printf("\n DIGITE UMA OPCAO VALIDA!\n\n");
                 } break;
             }
-            salvarDados(); // Executa aqui, pra evitar que dados se percam, no caso do programa ser fechado de forma inadequada.
+            SalvarDados(); /*Executa aqui, pra evitar que dados se percam, no caso do programa ser fechado de forma inadequada.*/
     } while(opcao != 0);
     return 0;
 }
 
 /* Lê nome e sobrenome, e, se não forem repetidos, lê e grava os outros dados */
-void adicionaContato(){
+void AdicionaContato(){
     fone.nome[0]='\0';
     setbuf(stdin, NULL);
     system("cls");
@@ -121,20 +121,20 @@ void adicionaContato(){
         printf("Digite o sobrenome:\n");
         gets(fone.sobrenome);
     } while(fone.sobrenome[0]=='\0' || fone.sobrenome[0]=='\n');
-    int i = buscaContato();
+    int i = BuscaContato();
     if ( i != -1 ) {
         system("cls");
         printf("\nContato já registrado\n\n");
         printf("(pressione qualquer tecla)\n\n");
         getch(); }
-    else if (total == MAX){
+    else if (total == TAM_MAX){
         system("cls");
         printf("\nNúmero máximo de contatos ultrapassado\n\n");
         printf("(pressione qualquer tecla)\n\n");
         getch(); }
     else {
-        dadosContato();
-        gravaContato(total);
+        DadosContato();
+        GravaContato(total);
         system("cls");
         printf("\nContato registrado com sucesso\n\n");
         printf("(pressione qualquer tecla)\n\n");
@@ -143,7 +143,7 @@ void adicionaContato(){
 }
 
 /* Lê os demais dados */
-void dadosContato(){
+void DadosContato(){
     int i;
     for (i=0; i<3; i++){
         printf("\nDigite o telefone %d: \n", i+1 );
@@ -155,13 +155,13 @@ void dadosContato(){
 }
 
 /* Grava a leitura feita, na agenda*/
-void gravaContato(int i){
+void GravaContato(int i){
     agenda[total] = fone;
     total++;
 }
 
 /* confere se o contato ja foi registrada*/
-int buscaContato(){
+int BuscaContato(){
     int i;
     for (i=0; i<total ; i++)
     if (strcmp(agenda[i].nome, fone.nome) == 0 && strcmp(agenda[i].sobrenome, fone.sobrenome) == 0)
@@ -170,9 +170,9 @@ int buscaContato(){
 }
 
 /* Imprime um contato */
-void veContato(int i){
+void VerContato(int i){
         register int j;
-        //printf("\nOrdem: %d . ", agenda[i].ordem);
+        /*printf("\nOrdem: %d . ", agenda[i].ordem);*/
         printf("\nNome: %s ", agenda[i].nome);
         printf("\nSobrenome: %s\n", agenda[i].sobrenome);
         for (j=0; j<3; j++)
@@ -184,10 +184,10 @@ void veContato(int i){
 }
 
 /* Imprime todos os contatos */
-void veAgenda(){
+void VerAgenda(){
     int i;
     for (i=0 ; i<total ; i++)
-        veContato(i);
+        VerContato(i);
     system("cls");
     printf("\nTodos os contatos foram mostrados.\n\n");
     printf("(pressione qualquer tecla)\n\n");
@@ -195,32 +195,32 @@ void veAgenda(){
 }
 
 /* Busca por um contato especifico*/
-void encNomeSobrenome(){
+void EncNomeSobrenome(){
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(fone.nome);
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i=buscaContato();
+    int i=BuscaContato();
     if(i==-1){
         system("cls");
         printf("Nenhum contato encontrado!!");
         printf("\n(Pressione qualquer tecla)\n\n");
         getch();
     } else
-        veContato(i);
+        VerContato(i);
 }
 
 /* Mostra todos os contatos com o mesmo nome */
-void encNome(){
+void EncNome(){
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(fone.nome);
     int i;
     for (i=0 ; i<total ; i++){
         if (strcmp(agenda[i].nome, fone.nome) == 0)
-            veContato(i);
+            VerContato(i);
     }
     system("cls");
     printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", fone.nome);
@@ -229,14 +229,14 @@ void encNome(){
 }
 
 /* Mostra todos os contatos com o mesmo sobrenome */
-void encSobrenome(){
+void EncSobrenome(){
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(fone.sobrenome);
     int i;
     for (i=0 ; i<total ; i++){
         if (strcmp(agenda[i].sobrenome, fone.sobrenome) == 0)
-            veContato(i);
+            VerContato(i);
     }
     system("cls");
     printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", fone.sobrenome);
@@ -245,14 +245,14 @@ void encSobrenome(){
 }
 
 /* Apaga um contato */
-void apagaContato(){
+void ApagaContato(){
     printf("\nDigite o primeiro nome do contato que deseja apagar:\n");
     fflush(stdin);
     gets(fone.nome);
     printf("\nDigite o sobrenome do contato que deseja apagar:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i = buscaContato();
+    int i = BuscaContato();
     if ( i != -1 )
     {
         int j;
@@ -271,7 +271,7 @@ void apagaContato(){
 }
 
 /* Atualiza um contato */
-void atualizaContato(){
+void AtualizaContato(){
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(fone.nome);
@@ -281,7 +281,7 @@ void atualizaContato(){
     int i, checkalt=0;
     for (i=0; i<total ; i++){
         if (strcmp(agenda[i].nome, fone.nome) == 0 && strcmp(agenda[i].sobrenome, fone.sobrenome) == 0) {
-            dadosContato();
+            DadosContato();
             agenda[i]=fone;
             checkalt++;
             }
@@ -301,7 +301,7 @@ void atualizaContato(){
 }
 
 /* Salva os dados no arquivo */
-void salvarDados(){
+void SalvarDados(){
     agendadados = fopen("agd.bin", "wb");
     if(agendadados == NULL){
         system("cls");
@@ -324,7 +324,7 @@ void salvarDados(){
 }
 
 /* Carrega os contatos a partir do arquivo*/
-void carregarDados(){
+void CarregarDados(){
     ncontatos = fopen("nco.bin", "rb");
     if(ncontatos != NULL)
         fscanf(ncontatos, "%d", &total);
@@ -344,7 +344,7 @@ void carregarDados(){
 
 /* Rotina de ordenação */
 /*
-void ordenacao(){
+void Ordenacao(){
     int i,j;
     for(i = 1; i<total; i++)
         for (j = 0; j<total-1 ; j++)
