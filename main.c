@@ -368,8 +368,6 @@ void BuscaBinaria(){
     printf("\nDigite o nome para localizar:\n");
     fflush(stdin);
     gets(fone.nome);
-    if (strcmp(agenda[i].nome, fone.nome) == 0)
-        i=total/4;
     if (strcmp(agenda[i].nome, fone.nome) >= 0){
         for (; i >= 0 ; i--){
         if (strcmp(agenda[i].nome,fone.nome)==0)
