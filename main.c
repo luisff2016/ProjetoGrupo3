@@ -50,7 +50,10 @@ void EncSobrenome();
 void ApagaContato();
 void AtualizaContato();
 int TamNome(int i);
-void Ordenacao();
+void VerOrdenado();
+void Ordenar();
+void Visualizacao();
+void BuscaBinaria();
 
 /* funcao principal*/
 int main(){
@@ -76,6 +79,8 @@ printf ("\t4. Ver todos os contatos da agenda \n");
 printf ("\t5. Procurar um contato espefico(Nome e Sobrenome) \n");
 printf ("\t6. Mostrar todos os contatos com o mesmo nome \n");
 printf ("\t7. Mostrar todos os contatos com o mesmo sobrenome \n");
+printf ("\t8. Ordenar os contatos\n");
+printf ("\t9. Busca Binaria do nome\n");
 printf ("\t\t0. Sair do programa e salvar os contatos\n");
 }
 
@@ -96,6 +101,8 @@ int AddMenu(){
             case 5: EncNomeSobrenome(); break;
             case 6: EncNome(); break;
             case 7: EncSobrenome(); break;
+            case 8: VerOrdenado(); break;
+            case 9: BuscaBinaria(); break;
             default:{
                 system("cls");
                 printf("\n DIGITE UMA OPCAO VALIDA!\n\n");
@@ -104,6 +111,12 @@ int AddMenu(){
             SalvarDados(); /*Executa aqui, pra evitar que dados se percam, no caso do programa ser fechado de forma inadequada.*/
     } while(opcao != 0);
     return 0;
+}
+
+/* Permitir ver o resultado */
+void Visualizacao(){
+    printf("(pressione qualquer tecla)\n\n");
+    getch();
 }
 
 /* Lê nome e sobrenome, e, se não forem repetidos, lê e grava os outros dados */
@@ -121,24 +134,22 @@ void AdicionaContato(){
         printf("Digite o sobrenome:\n");
         gets(fone.sobrenome);
     } while(fone.sobrenome[0]=='\0' || fone.sobrenome[0]=='\n');
-    int i = BuscaContato();
-    if ( i != -1 ) {
+    if ( BuscaContato() != -1 ) {
         system("cls");
         printf("\nContato já registrado\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch(); }
+        Visualizacao();
+        }
     else if (total == TAM_MAX){
         system("cls");
         printf("\nNúmero máximo de contatos ultrapassado\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch(); }
+        Visualizacao();
+        }
     else {
         DadosContato();
         GravaContato(total);
         system("cls");
         printf("\nContato registrado com sucesso\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch();
+        Visualizacao();
         }
 }
 
@@ -170,17 +181,12 @@ int BuscaContato(){
 }
 
 /* Imprime um contato */
-void VerContato(int i){
+void VerContato(int n){
         register int j;
-        /*printf("\nOrdem: %d . ", agenda[i].ordem);*/
-        printf("\nNome: %s ", agenda[i].nome);
-        printf("\nSobrenome: %s\n", agenda[i].sobrenome);
+        printf("\nNome: %s Sobrenome: %s\n", agenda[n].nome,agenda[n].sobrenome);
         for (j=0; j<3; j++)
-            printf("Fone %d: %s  \n", j+1, agenda[i].telefone[j]);
-        for (j=0; j<3; j++)
-            printf("Email %d: %s \n", j+1, agenda[i].email[j]);
-        printf("(pressione qualquer tecla)\n\n");
-        getch();
+            printf("Fone%d: %s Email%d: %s \n", j+1, agenda[n].telefone[j], j+1, agenda[n].email[j]);
+        Visualizacao();
 }
 
 /* Imprime todos os contatos */
@@ -190,8 +196,7 @@ void VerAgenda(){
         VerContato(i);
     system("cls");
     printf("\nTodos os contatos foram mostrados.\n\n");
-    printf("(pressione qualquer tecla)\n\n");
-    getch();
+    Visualizacao();
 }
 
 /* Busca por um contato especifico*/
@@ -202,46 +207,42 @@ void EncNomeSobrenome(){
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i=BuscaContato();
-    if(i==-1){
+    if(BuscaContato()==-1){
         system("cls");
         printf("Nenhum contato encontrado!!");
-        printf("\n(Pressione qualquer tecla)\n\n");
-        getch();
+        Visualizacao();
     } else
-        VerContato(i);
+        VerContato(BuscaContato());
 }
 
 /* Mostra todos os contatos com o mesmo nome */
 void EncNome(){
+    int i;
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(fone.nome);
-    int i;
     for (i=0 ; i<total ; i++){
         if (strcmp(agenda[i].nome, fone.nome) == 0)
             VerContato(i);
     }
     system("cls");
     printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", fone.nome);
-    printf("(pressione qualquer tecla)\n\n");
-    getch();
+    Visualizacao();
 }
 
 /* Mostra todos os contatos com o mesmo sobrenome */
 void EncSobrenome(){
+    int i;
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i;
     for (i=0 ; i<total ; i++){
         if (strcmp(agenda[i].sobrenome, fone.sobrenome) == 0)
             VerContato(i);
     }
     system("cls");
     printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", fone.sobrenome);
-    printf("(pressione qualquer tecla)\n\n");
-    getch();
+    Visualizacao();
 }
 
 /* Apaga um contato */
@@ -252,33 +253,32 @@ void ApagaContato(){
     printf("\nDigite o sobrenome do contato que deseja apagar:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i = BuscaContato();
-    if ( i != -1 )
+    if ( BuscaContato() != -1 )
     {
         int j;
-        for (j=i; j<total; j++)
+        for (j=BuscaContato(); j<total; j++)
             agenda[j]=agenda[j+1];
         total--;
         system("cls");
         printf("\n Registro apagado \n\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch();
+        Visualizacao();
     }
-    else { system("cls");
-           printf("\n Contato nao existe\n\n\n");
-           printf("(pressione qualquer tecla)\n\n");
-            getch(); }
+    else {
+        system("cls");
+        printf("\n Contato nao existe\n\n\n");
+        Visualizacao();
+    }
 }
 
 /* Atualiza um contato */
 void AtualizaContato(){
+    int i, checkalt=0;
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(fone.nome);
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(fone.sobrenome);
-    int i, checkalt=0;
     for (i=0; i<total ; i++){
         if (strcmp(agenda[i].nome, fone.nome) == 0 && strcmp(agenda[i].sobrenome, fone.sobrenome) == 0) {
             DadosContato();
@@ -289,14 +289,12 @@ void AtualizaContato(){
     if(checkalt==0){
         system("cls");
         printf("\nEsse contato não existe.\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch();
+        Visualizacao();
     }
     else {
         system("cls");
         printf("\nContato alterado com sucesso.\n\n");
-        printf("(pressione qualquer tecla)\n\n");
-        getch();
+        Visualizacao();
     }
 }
 
@@ -306,18 +304,17 @@ void SalvarDados(){
     if(agendadados == NULL){
         system("cls");
         printf("Opa!! parece que houve um problema ao tentar salvar os contatos. x.x");
-        printf("\n(Pressione qualquer tecla)");
-        getch(); }
+        Visualizacao();
+        }
     else
     fwrite(&agenda, sizeof(TCONTATO), total, agendadados);
     fclose(agendadados);
-
     ncontatos = fopen("nco.bin", "wb");
     if(ncontatos == NULL){
         system("cls");
         printf("Opa!! parece que houve um problema ao tentar salvar os contatos. x.x");
-        printf("\n(Pressione qualquer tecla)");
-        getch(); }
+        Visualizacao();
+        }
     else
     fprintf(ncontatos, "%d", total);
     fclose(ncontatos);
@@ -329,43 +326,62 @@ void CarregarDados(){
     if(ncontatos != NULL)
         fscanf(ncontatos, "%d", &total);
     fclose(ncontatos);
-
     if(total!=0) {
         agendadados = fopen("agd.bin", "rb");
         if(agendadados == NULL){
             printf("Opa!! parece que houve um problema ao tentar carregar os contatos. x.x");
-            printf("\n(Pressione qualquer tecla)");
-            getch();
-            system("cls"); }
+            Visualizacao();
+            system("cls");
+            }
         else
             fread(&agenda, sizeof(TCONTATO), total, agendadados);
-        fclose(agendadados); }
+            fclose(agendadados);
+        }
 }
 
 /* Rotina de ordenação */
-/*
-void Ordenacao(){
-    int i,j;
-    for(i = 1; i<total; i++)
-        for (j = 0; j<total-1 ; j++)
-            if (strcmp(agenda.nome[j],agenda.nome[j+1]) > 0)
-            {
-                strcpy(fone,agenda[j]);
-                strcpy(agenda.nome[j],agenda.nome[j+1]);
-                strcpy(agenda.nome[j+1],fone);
-            }
-    printf("Imprimindo os nomes ordenados\n");
-    for(i = 0; i < qtd;++i)
-        printf("%s\n",nomes[i]);
+void VerOrdenado(){
+    int i;
+    Ordenar();
+    printf("\nImprimindo os nomes ordenados\n");
+    for(i = 0; i < total;++i)
+        printf("%s %s\n", agenda[i].nome,agenda[i].sobrenome);
+    Visualizacao();
 }
-*/
 
-/*
-char* temp = (char*) malloc(50*sizeof(char));
-nomes = (char**) malloc(qtd*sizeof(char*));
-    for(i=0 ; i<total ; ++i){
-        printf("Entre com nome %i : ", i );
-        scanf("%s", agenda.nome[i]);
-        printf("\n");
+void Ordenar(){
+    int j,k;
+    for (k=1; k < total ; k++){
+        for (j=0; j < total-1 ; j++)
+            if (strcmp(agenda[j].nome,agenda[j+1].nome)>0) {
+            fone=agenda[j];
+            agenda[j]=agenda[j+1];
+            agenda[j+1]=fone;
+            }
     }
-*/
+}
+
+/* Busca Binaria do nome */
+void BuscaBinaria(){
+    int i = total/2;
+    Ordenar();
+    printf("\nDigite o nome para localizar:\n");
+    fflush(stdin);
+    gets(fone.nome);
+    if (strcmp(agenda[i].nome, fone.nome) == 0)
+        i=total/4;
+    if (strcmp(agenda[i].nome, fone.nome) >= 0){
+        for (; i >= 0 ; i--){
+        if (strcmp(agenda[i].nome,fone.nome)==0)
+            VerContato(i);
+        }
+    }
+    else {
+        for (; i <= total ; i++){
+        if (strcmp(agenda[i].nome, fone.nome)==0)
+            VerContato(i);
+        }
+    }
+    printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", fone.nome);
+    Visualizacao();
+}
