@@ -98,6 +98,7 @@ int BuscaBinaria(int e, int d);
 
 void EncNome();
 void EncSobrenome();
+void EncNomeSobrenome();
 
 
 /* funcao principal*/
@@ -125,6 +126,7 @@ void Menu(){
     printf ("\t5. Procurar um contato pelo Nome \n");
     printf ("\t6. Mostrar todos os contatos com o mesmo nome \n");
     printf ("\t7. Mostrar todos os contatos com o mesmo sobrenome \n");
+    printf ("\t8. Buscar contato especifico. (Nome e Sobrenome) \n");
     printf ("\t\t0. Sair do programa e salvar os contatos\n");
 }
 
@@ -145,6 +147,7 @@ int AddMenu(){
             case 5: BuscaNomeBinaria(); break;
             case 6: EncNome(); break;
             case 7: EncSobrenome(); break;
+            case 8: EncNomeSobrenome(); break;
             default:{
                 system("cls");
                 printf("\n DIGITE UMA OPCAO VALIDA!\n\n");
@@ -202,9 +205,18 @@ void DadosContato(){
     for (i=0; i<3; i++){
         printf("\nDigite o telefone %d: \n", i+1 );
         gets(agenda[total].telefone[i]); }
+    int emailOk;
     for (i=0; i<3; i++){
-        printf("\nDigite o email %d: \n", i+1 );
-        gets(agenda[total].email[i]);
+        do { printf("\nDigite o email %d: \n", i+1 );
+             gets(agenda[total].email[i]);
+             if(   strchr(agenda[total].email[i], '@') == NULL
+                && strlen(agenda[total].email[i]) != 0)
+             {
+                printf("\n Email invalido\n");
+                emailOk=0;
+             }
+             else emailOk=1; }
+        while (emailOk == 0);
     }
 }
 
@@ -317,7 +329,7 @@ void AtualizaContato(){
 
 /* Salva os dados no arquivo */
 void SalvarDados(){
-    agendadados = fopen("agd.bin", "wb");
+    agendadados = fopen("agd.txt", "w");
     if(agendadados == NULL){
         system("cls");
         printf("Opa!! parece que houve um problema ao tentar salvar os contatos. x.x");
@@ -326,7 +338,7 @@ void SalvarDados(){
     else
     fwrite(&agenda, sizeof(TCONTATO), total, agendadados);
     fclose(agendadados);
-    ncontatos = fopen("nco.bin", "wb");
+    ncontatos = fopen("nco.txt", "w");
     if(ncontatos == NULL){
         system("cls");
         printf("Opa!! parece que houve um problema ao tentar salvar os contatos. x.x");
@@ -339,12 +351,12 @@ void SalvarDados(){
 
 /* Carrega os contatos a partir do arquivo*/
 void CarregarDados(){
-    ncontatos = fopen("nco.bin", "rb");
+    ncontatos = fopen("nco.txt", "r");
     if(ncontatos != NULL)
         fscanf(ncontatos, "%d", &total);
     fclose(ncontatos);
     if(total!=0) {
-        agendadados = fopen("agd.bin", "rb");
+        agendadados = fopen("agd.txt", "r");
         if(agendadados == NULL){
             printf("Opa!! parece que houve um problema ao tentar carregar os contatos. x.x");
             Visualizacao();
@@ -431,6 +443,23 @@ void EncSobrenome(){
     system("cls");
     printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", agenda[total].sobrenome);
     Visualizacao();
+}
+
+/*Busca por um contato especifico*/
+
+void EncNomeSobrenome(){
+    printf("\nDigite o primeiro nome do contato:\n");
+    fflush(stdin);
+    gets(agenda[total].nome);
+    printf("\nDigite o sobrenome do contato:\n");
+    fflush(stdin);
+    gets(agenda[total].sobrenome);
+    if(ExisteContato()==-1){
+        system("cls");
+        printf("Nenhum contato encontrado!!");
+        Visualizacao();
+    } else
+        VerContato(ExisteContato());
 }
 
 /*    Ordenar();
