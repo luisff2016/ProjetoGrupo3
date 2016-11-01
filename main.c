@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <conio.h>
 #include <string.h>
+#include <ctype.h>
 
 /*Limites das Variaveis*/
 #define TAM_MAX 1000       /*Quantidade maxima de Contatos*/
@@ -99,6 +100,7 @@ int BuscaBinaria(int e, int d);
 void EncNome();
 void EncSobrenome();
 void EncNomeSobrenome();
+int ValidarEmail();
 
 
 /* funcao principal*/
@@ -209,8 +211,7 @@ void DadosContato(){
     for (i=0; i<3; i++){
         do { printf("\nDigite o email %d: \n", i+1 );
              gets(agenda[total].email[i]);
-             if(   strchr(agenda[total].email[i], '@') == NULL
-                && strlen(agenda[total].email[i]) != 0)
+             if( ValidarEmail(i) == 0 )
              {
                 printf("\n Email invalido\n");
                 emailOk=0;
@@ -461,6 +462,63 @@ void EncNomeSobrenome(){
     } else
         VerContato(ExisteContato());
 }
+
+/* Faz a validação do Email */
+int ValidarEmail(int i){
+    // o Email é valido ja de cara, se for vazio.
+    if( strlen(agenda[total].email[i]) == 0 )
+        return 1;
+    // Invalido se não houver '@'.
+    else if( strchr(agenda[total].email[i], '@') == NULL )
+        return 0;
+     // Contando numero de caracteres antes do '@'
+    int nc=0;
+    while(agenda[total].email[i][nc] != '@')
+        nc++;
+    // Passando a primeira parte pra outra string
+    char emailPP[TAM_EMAIL];
+    strncpy(emailPP,agenda[total].email[i], nc);
+    // Invalido se houver qualquer coisa além de letras minusculas nesta parte.
+    int j;
+    for(j=0; j<nc; j++){
+        if(isalpha(emailPP[j])==0 || isupper(emailPP[j]))
+            return 0;
+    }
+    // Passando a ultima parte para outra string
+    char emailUP[TAM_EMAIL];
+    strcpy(emailUP,agenda[total].email[i]);
+    int teup = strlen(emailUP);
+    int k;
+    for(k=0; k<=nc; k++){
+        for(j=0; j<=teup; j++){
+            emailUP[j]=emailUP[j+1];
+        }
+        teup = strlen(emailUP);
+    }
+    /*Invalido se: Tem algo alem de letras e pontos, tem letras com acentos,
+      tem dois pontos juntos, tem ponto no final, não tem ponto algum.*/
+    for(j=0; j<teup; j++){
+        if(isalpha(emailUP[j])==0 && emailUP[j] != '.'
+        || emailUP[j] == '.' && emailUP[j+1] == '.'
+        || emailUP[teup-1] == '.'
+        || strchr(emailUP, '.') == NULL )
+            return 0;
+    }
+    // Email valido se passar por todos os testes
+    return 1;
+}
+
+    /*for (i=0; i<3; i++){
+        do { printf("\nDigite o email %d: \n", i+1 );
+             gets(agenda[total].email[i]);
+             if(   strlen(agenda[total].email[i]) != 0
+                && strchr(agenda[total].email[i], '@') == NULL)
+             {
+                printf("\n Email invalido\n");
+                emailOk=0;
+             }
+             else emailOk=1; }
+        while (emailOk == 0);
 
 /*    Ordenar();
     printf("\nDigite o nome para localizar:\n");
