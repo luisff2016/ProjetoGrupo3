@@ -220,7 +220,8 @@ void DadosContato(){
              gets(agenda[total].telefone[i]);
              if( ValidarTelefone(i) == 0 )
              {
-                printf("\n Telefone invalido. ( Alguns exemplos válidos: +11 (11) 1111 1111 | (12) 12345 6789 | 12345678 )\n");
+                printf("\n Telefone invalido.\n");
+                printf(" Alguns exemplos válidos: +11 (11) 1111 1111 | (12) 12345 6789 | 12345678 )\n");
                 telefoneOk=0;
              }
              else telefoneOk=1; }
@@ -232,7 +233,8 @@ void DadosContato(){
              gets(agenda[total].email[i]);
              if( ValidarEmail(i) == 0 )
              {
-                printf("\n Email invalido. ( Alguns exemplos validos: usuario@local | usuario@local.algumacoisa )\n");
+                printf("\n Email invalido.\n");
+                printf("Alguns exemplos validos: usuario@local | usuario@local.algumacoisa )\n");
                 emailOk=0;
              }
              else emailOk=1; }
@@ -255,10 +257,10 @@ int ValidarEmail(int i){
     // Passando a primeira parte pra outra string
     char emailPP[TAM_EMAIL];
     strncpy(emailPP,agenda[total].email[i], nc);
-    // Invalido se houver qualquer coisa além de letras minusculas nesta parte.
+    // Invalido se houver qualquer coisa além de letras minusculas e numeros nesta parte.
     int j;
     for(j=0; j<nc; j++){
-        if(isalpha(emailPP[j])==0 || isupper(emailPP[j]))
+        if((isalpha(emailPP[j])==0 && isdigit(emailPP[j])==0)  || isupper(emailPP[j]) )
             return 0;
     }
     // Passando a ultima parte para outra string
