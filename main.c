@@ -97,11 +97,20 @@ void BuscaNomeBinaria();
 /* Funcao de busca binaria da agenda */
 int BuscaBinaria(int e, int d);
 
+/* Mostra todos os contatos com o mesmo nome */
 void EncNome();
-void EncSobrenome();
-void EncNomeSobrenome();
-int ValidarEmail();
 
+/* Mostra todos os contatos com o mesmo nome */
+void EncSobrenome();
+
+/* Encontra um contato especifico atraves de nome e sobrenome */
+void EncNomeSobrenome();
+
+/* Verifica se o email é válido */
+int ValidarEmail(int i);
+
+/* Verifica se o telefone é valido */
+int ValidarTelefone(int i);
 
 /* funcao principal*/
 
@@ -204,21 +213,143 @@ void AdicionaContato(){
 /* Lê os demais dados */
 void DadosContato(){
     int i;
+    int telefoneOk;
     for (i=0; i<3; i++){
-        printf("\nDigite o telefone %d: \n", i+1 );
-        gets(agenda[total].telefone[i]); }
+        do { printf("\nDigite o telefone %d: \n", i+1 );
+             gets(agenda[total].telefone[i]);
+             if( ValidarTelefone(i) == 0 )
+             {
+                printf("\n Telefone invalido. \n");
+                telefoneOk=0;
+             }
+             else telefoneOk=1; }
+        while (telefoneOk == 0);
+    }
     int emailOk;
     for (i=0; i<3; i++){
         do { printf("\nDigite o email %d: \n", i+1 );
              gets(agenda[total].email[i]);
              if( ValidarEmail(i) == 0 )
              {
-                printf("\n Email invalido\n");
+                printf("\n Email invalido n");
                 emailOk=0;
              }
              else emailOk=1; }
         while (emailOk == 0);
     }
+}
+
+/* Faz a validação do Email */
+int ValidarEmail(int i){
+    // o Email é valido ja de cara, se for vazio.
+    if( strlen(agenda[total].email[i]) == 0 )
+        return 1;
+    // Invalido se não houver '@'.
+    else if( strchr(agenda[total].email[i], '@') == NULL )
+        return 0;
+     // Contando numero de caracteres antes do '@'
+    int nc=0;
+    while(agenda[total].email[i][nc] != '@')
+        nc++;
+    // Passando a primeira parte pra outra string
+    char emailPP[TAM_EMAIL];
+    strncpy(emailPP,agenda[total].email[i], nc);
+    // Invalido se houver qualquer coisa além de letras minusculas nesta parte.
+    int j;
+    for(j=0; j<nc; j++){
+        if(isalpha(emailPP[j])==0 || isupper(emailPP[j]))
+            return 0;
+    }
+    // Passando a ultima parte para outra string
+    char emailUP[TAM_EMAIL];
+    strcpy(emailUP,agenda[total].email[i]);
+    int teup = strlen(emailUP);
+    int k;
+    for(k=0; k<=nc; k++){
+        for(j=0; j<=teup; j++){
+            emailUP[j]=emailUP[j+1];
+        }
+        teup = strlen(emailUP);
+    }
+    /*Invalido se: Tem algo alem de letras e pontos, tem letras com acentos,
+      tem dois pontos juntos, tem ponto no final, não tem ponto algum.*/
+    for(j=0; j<teup; j++){
+        if(isalpha(emailUP[j])==0 && emailUP[j] != '.'
+        || emailUP[j] == '.' && emailUP[j+1] == '.'
+        || emailUP[teup-1] == '.'
+        || strchr(emailUP, '.') == NULL )
+            return 0;
+    }
+    // Email valido se passar por todos os testes
+    return 1;
+}
+
+/* Faz a validação do Telefone */
+int ValidarTelefone(int i){
+    /* Criando uma nova string pra receber e tirar os espaços do telefone,
+     facilitando a validação */
+    int j, k=0;
+    char ch1;
+    char telefonetemp[TAM_FONE];
+    for (j = 0; j < strlen(agenda[total].telefone[i]); j++) {
+      if (agenda[total].telefone[i][j] != ' ') {
+         ch1 = agenda[total].telefone[i][j];
+         telefonetemp[k] = ch1;
+         k++;
+      }
+   }
+   telefonetemp[k] = '\0';
+    // Inicialmente já é invalido se for vazio.
+    if( strlen(telefonetemp) == 0 )
+        return 1;
+    // Inicialmente já é invalido se for menor que 8.
+    if( strlen(telefonetemp) <= 7 )
+        return 0;
+    // checando casos validos.
+    if( strlen(telefonetemp) == 15 || strlen(telefonetemp) == 16) {
+        for(j=0; j<strlen(telefonetemp); j++){
+            if(j==0){
+                if(telefonetemp[j] != '+')
+                    return 0; }
+            else
+            if(j==3){
+                if(telefonetemp[j] != '(')
+                    return 0; }
+            else
+            if(j==6){
+                if(telefonetemp[j] != ')')
+                    return 0; }
+            else
+                if(isdigit(telefonetemp[j]) == 0)
+                    return 0;
+        }
+        return 1;
+    }
+    if( strlen(telefonetemp) == 12 || strlen(telefonetemp) == 13) {
+        for(j=0; j<strlen(telefonetemp); j++){
+            if(j==0)
+                if(telefonetemp[j] != '(')
+                    return 0;
+            else
+            if(j==3)
+                if(telefonetemp[j] != ')')
+                    return 0;
+            else
+                if(isdigit(telefonetemp[j]) == 0)
+                    return 0;
+        }
+        return 1;
+    }
+    if(    strlen(telefonetemp) == 8 || strlen(telefonetemp) == 9
+        || strlen(telefonetemp) == 10 || strlen(telefonetemp) == 11
+        || strlen(telefonetemp) == 12 || strlen(telefonetemp) == 13) {
+        for(j=0; j<strlen(telefonetemp); j++){
+            if(isdigit(telefonetemp[j]) == 0)
+                return 0;
+        }
+        return 1;
+    }
+    return 0;
 }
 
 /* Grava a leitura feita, na agenda*/
@@ -241,7 +372,9 @@ void VerContato(int n){
         if (n>total-1) printf("\nContato nao existe\n");
         printf("\nNome: %s Sobrenome: %s\n", agenda[n].nome,agenda[n].sobrenome);
         for (j=0; j<3; j++)
-            printf("Fone%d: %s Email%d: %s \n", j+1, agenda[n].telefone[j], j+1, agenda[n].email[j]);
+            printf("Fone%d: %s \n", j+1, agenda[n].telefone[j]);
+        for (j=0; j<3; j++)
+            printf("Email%d: %s \n", j+1, agenda[n].email[j]);
         getch();
 }
 
@@ -417,23 +550,27 @@ int BuscaBinaria(int e, int d){
 /* Mostra todos os contatos com o mesmo nome */
 
 void EncNome(){
-    int i;
+    int i, k=0;
     printf("\nDigite o primeiro nome do contato:\n");
     fflush(stdin);
     gets(agenda[total].nome);
     for (i=0 ; i<total ; i++){
-        if (strcmp(agenda[i].nome, agenda[total].nome) == 0)
+        if (strcmp(agenda[i].nome, agenda[total].nome) == 0){
             VerContato(i);
+            k++; }
     }
     system("cls");
-    printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", agenda[total].nome);
+    if(k!=0)
+        printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", agenda[total].nome);
+    else
+        printf("\nNenhum contato de nome: '%s' foi encontrado.\n\n", agenda[total].nome);
     Visualizacao();
 }
 
 /* Mostra todos os contatos com o mesmo sobrenome */
 
 void EncSobrenome(){
-    int i;
+    int i, k=0;
     printf("\nDigite o sobrenome do contato:\n");
     fflush(stdin);
     gets(agenda[total].sobrenome);
@@ -442,7 +579,10 @@ void EncSobrenome(){
             VerContato(i);
     }
     system("cls");
-    printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", agenda[total].sobrenome);
+    if(k!=0)
+        printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", agenda[total].sobrenome);
+    else
+        printf("\nNenhum contato de sobrenome: '%s' foi encontrado.\n\n", agenda[total].sobrenome);
     Visualizacao();
 }
 
@@ -463,50 +603,6 @@ void EncNomeSobrenome(){
         VerContato(ExisteContato());
 }
 
-/* Faz a validação do Email */
-int ValidarEmail(int i){
-    // o Email é valido ja de cara, se for vazio.
-    if( strlen(agenda[total].email[i]) == 0 )
-        return 1;
-    // Invalido se não houver '@'.
-    else if( strchr(agenda[total].email[i], '@') == NULL )
-        return 0;
-     // Contando numero de caracteres antes do '@'
-    int nc=0;
-    while(agenda[total].email[i][nc] != '@')
-        nc++;
-    // Passando a primeira parte pra outra string
-    char emailPP[TAM_EMAIL];
-    strncpy(emailPP,agenda[total].email[i], nc);
-    // Invalido se houver qualquer coisa além de letras minusculas nesta parte.
-    int j;
-    for(j=0; j<nc; j++){
-        if(isalpha(emailPP[j])==0 || isupper(emailPP[j]))
-            return 0;
-    }
-    // Passando a ultima parte para outra string
-    char emailUP[TAM_EMAIL];
-    strcpy(emailUP,agenda[total].email[i]);
-    int teup = strlen(emailUP);
-    int k;
-    for(k=0; k<=nc; k++){
-        for(j=0; j<=teup; j++){
-            emailUP[j]=emailUP[j+1];
-        }
-        teup = strlen(emailUP);
-    }
-    /*Invalido se: Tem algo alem de letras e pontos, tem letras com acentos,
-      tem dois pontos juntos, tem ponto no final, não tem ponto algum.*/
-    for(j=0; j<teup; j++){
-        if(isalpha(emailUP[j])==0 && emailUP[j] != '.'
-        || emailUP[j] == '.' && emailUP[j+1] == '.'
-        || emailUP[teup-1] == '.'
-        || strchr(emailUP, '.') == NULL )
-            return 0;
-    }
-    // Email valido se passar por todos os testes
-    return 1;
-}
 
     /*for (i=0; i<3; i++){
         do { printf("\nDigite o email %d: \n", i+1 );
@@ -573,6 +669,5 @@ void EncNomeSobrenome(){
     } else
         VerContato(ExisteContato());
 }
-
 
 */
