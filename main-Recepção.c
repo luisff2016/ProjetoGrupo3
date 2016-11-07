@@ -13,27 +13,18 @@
 #define TAM_EMAIL 61       /*Quantidade maxima de Caracteres do Email*/
 
 
-/* PROJETO DE PROGRAMAÇÃO IMPERATIVA */
+/* PROJETO DE PROGRAMAÇÃO IMPERATIVA GRUPO 3 */
 /*  -Luis Fernando Feitosa.
     -Wendhio Thalison Neres dos Santos.
     -Rodrigo Oliveira Santos. */
-
-/*27-10-2016, fazer apenas busca por nome. OK*/
-/*27-10-2016, apos buscar, navegar Antes e Posterior. OK*/
-/*27-10-2016, sugestao: abrir arquivo no inicio e gravar no final. OK*/
-/*27-10-2016, nao precisa editar contato. OK*/
-/*27-10-2016, sugestao: salvar arquivo ordenado. OK*/
-/*27-10-2016, Orientacao do professor: nao declarar variavel auxiliar como global. OK*/
-/*foi excluia a variavel TCONTATO fone e em seu lugar sera usada agenda[total] como auxiliar */
-/*falta fazer a validacao do telefone e do email */
 
 
 /*definindo variavel para registro */
 typedef struct{
 char nome[TAM_NOME];            /* nao pode ser vazio*/
 char sobrenome[TAM_SOBRENOME];
-char telefone[3][TAM_FONE];     /* modelo: '+01 (23) 45678 9012' */
-char email[3][TAM_EMAIL];       /* 'modelo_usu.1234567890abcdefghijklmnopqrstuvwxyz@local.aaa.bb' */
+char telefone[3][TAM_FONE];     /* modelo: '+99 (99) 9 9999 9999' */
+char email[3][TAM_EMAIL];       /* 'modelo: a-z . _ 0-9 @ a-z . a-z . a-z' */
 } TCONTATO;
 TCONTATO agenda[TAM_MAX];
 
@@ -61,7 +52,7 @@ void DadosContato();
 /* Grava a leitura feita, na agenda*/
 void GravaContato(int i);
 
-/* confere se o contato ja foi registrada*/
+/* Confere se o contato ja foi registrada*/
 int ExisteContato();
 
 /* Imprime um contato */
@@ -125,22 +116,22 @@ int main(){
     CarregarDados();
     AddMenu();
     SalvarDados();
-    /*Além de ser executado aqui ao fim do programa, também é executado na função 'addMenu'
-    salvando os dados sempre que o programa volta para o menu, evitando perda de dados
-    no caso do usuario fechar o programa de forma inadequada.*/
     return 0;
 }
+/*A funcao SalvarDados() além de ser executado no main, também é executado na função AddMenu()
+    salvando os dados sempre que o programa volta para o menu, evitando perda de dados
+    no caso do usuario fechar o programa de forma inadequada.*/
 
 /* exibe menu de opcoes */
 void Menu(){
     printf("\t============================================\n");
     printf("\t\t\t AGENDA TELEFONICA \t\t\n");
     printf("\t============================================\n");
-    printf ("\t1. Adicionar contato \n");
+    printf ("\t1. Adicionar contato e ordenar agenda \n");
     printf ("\t2. Apagar contato \n");
     printf ("\t3. Atualizar contato \n");
     printf ("\t4. Ver todos os contatos da agenda \n");
-    printf ("\t5. Procurar um contato pelo Nome \n");
+    printf ("\t5. Buscar pelo nome e navegar pela agenda \n");
     printf ("\t6. Mostrar todos os contatos com o mesmo nome \n");
     printf ("\t7. Mostrar todos os contatos com o mesmo sobrenome \n");
     printf ("\t8. Buscar contato especifico. (Nome e Sobrenome) \n");
@@ -184,7 +175,7 @@ void Visualizacao(){
  /* Converte a primeiro letra do nome para Maiuscula */
 void NomeMaiuscula(){
     int i;
-    agenda[total].nome[0] = toupper(agenda[total].nome[0]);
+    if (isalpha(agenda[total].nome[0])) agenda[total].nome[0] = toupper(agenda[total].nome[0]);
     for (i=1; i<strlen(agenda[total].nome)-1; i++){
         if (agenda[total].nome[i]==' '
             && isalpha(agenda[total].nome[i+1])!= 0 )
@@ -195,7 +186,7 @@ void NomeMaiuscula(){
  /* Converte a primeiro letra do sobrenome para Maiuscula */
 void SobrenomeMaiuscula(){
     int i;
-    agenda[total].sobrenome[0] = toupper(agenda[total].sobrenome[0]);
+    if (isalpha(agenda[total].sobrenome[0])) agenda[total].sobrenome[0] = toupper(agenda[total].sobrenome[0]);
     for (i=1; i<strlen(agenda[total].sobrenome)-1; i++){
         if (agenda[total].sobrenome[i]==' '
             && isalpha(agenda[total].sobrenome[i+1])!= 0 )
@@ -205,7 +196,6 @@ void SobrenomeMaiuscula(){
 
 /* Lê nome e sobrenome, e, se não forem repetidos, lê e grava os outros dados */
 void AdicionaContato(){
-    char nomeValido;
     setbuf(stdin, NULL);
     system("cls");
     printf("(Os campos com um '*' são obrigátorios, os demais são opcionais.)\n\n");
@@ -230,14 +220,14 @@ void AdicionaContato(){
         system("cls");
         printf("\nNúmero máximo de contatos ultrapassado\n\n");
         Visualizacao();
-        }
-    else {
-        DadosContato();
-        GravaContato(total);
-        system("cls");
-        Ordenar();      /*manter lista ordenada*/
-        printf("\nContato registrado com sucesso\n\n");
-        Visualizacao();
+            }
+        else {
+            DadosContato();
+            GravaContato(total);
+            system("cls");
+            Ordenar();      /*manter lista ordenada*/
+            printf("\nContato registrado com sucesso\n\n");
+            Visualizacao();
         }
 }
 
@@ -245,26 +235,26 @@ void AdicionaContato(){
 void DadosContato(){
     int i;
     int telefoneOk;
+    int emailOk;
     for (i=0; i<3; i++){
         do { printf("\nDigite o telefone %d: \n", i+1 );
              gets(agenda[total].telefone[i]);
              if( ValidarTelefone(i) == 0 )
              {
                 printf("\n Telefone invalido.\n");
-                printf(" Alguns exemplos válidos: +11(11) 1111 1111 | (12) 12345 6789 | 12345678 )\n");
+                printf(" Alguns exemplos válidos: +99(99)9 9999 9999 | 12345678 )\n");
                 telefoneOk=0;
              }
              else telefoneOk=1; }
         while (telefoneOk == 0);
     }
-    int emailOk;
     for (i=0; i<3; i++){
         do { printf("\nDigite o email %d: \n", i+1 );
              gets(agenda[total].email[i]);
              if( ValidarEmail(i) == 0 )
              {
                 printf("\n Email invalido.\n");
-                printf("Alguns exemplos validos: usuario@local | usuario@local.algumacoisa )\n");
+                printf("Alguns exemplos validos: a-z 0-9@ a-z. a-z. a-z | usuario09@web.com.br \n");
                 emailOk=0;
              }
              else emailOk=1; }
@@ -274,30 +264,38 @@ void DadosContato(){
 
 /* Faz a validação do Email */
 int ValidarEmail(int i){
-    // o Email é valido ja de cara, se for vazio.
+    int nc=0;
+    int j;
+    char emailPP[TAM_EMAIL];
+    char emailUP[TAM_EMAIL];
+    int teup;
+    int k;
+    /* o Email é valido ja de cara, se for vazio. */
     if( strlen(agenda[total].email[i]) == 0 )
         return 1;
-    // Invalido se não houver '@'.
+    /* Invalido se não houver '@'. */
     else if( strchr(agenda[total].email[i], '@') == NULL )
         return 0;
-     // Contando numero de caracteres antes do '@'
-    int nc=0;
+     /* Contando numero de caracteres antes do '@' */
     while(agenda[total].email[i][nc] != '@')
         nc++;
-    // Passando a primeira parte pra outra string
-    char emailPP[TAM_EMAIL];
+    /* Passando a primeira parte pra outra string */
     strncpy(emailPP,agenda[total].email[i], nc);
-    // Invalido se houver qualquer coisa além de letras minusculas e numeros nesta parte.
-    int j;
+    /* Invalido se houver qualquer coisa além de letras minusculas, numeros, ponto e underline nesta parte. */
     for(j=0; j<nc; j++){
-        if((isalpha(emailPP[j])==0 && isdigit(emailPP[j])==0)  || isupper(emailPP[j]) )
+        if(isalpha(emailPP[0])==0)
+            return 0;
+        else
+            if((isalpha(emailPP[j])==0
+                && isdigit(emailPP[j])==0
+                && emailPP[j] != '_'
+                && emailPP[j] != '.')
+               || isupper(emailPP[j]) )
             return 0;
     }
-    // Passando a ultima parte para outra string
-    char emailUP[TAM_EMAIL];
+    /* Passando a ultima parte para outra string */
     strcpy(emailUP,agenda[total].email[i]);
-    int teup = strlen(emailUP);
-    int k;
+    teup = strlen(emailUP);
     for(k=0; k<=nc; k++){
         for(j=0; j<=teup; j++){
             emailUP[j]=emailUP[j+1];
@@ -307,13 +305,13 @@ int ValidarEmail(int i){
     /*Invalido se: Tem algo alem de letras e pontos, tem letras com acentos,
       tem dois pontos juntos, tem ponto no final, não tem ponto algum.*/
     for(j=0; j<teup; j++){
-        if(isalpha(emailUP[j])==0 && emailUP[j] != '.'
-        || emailUP[j] == '.' && emailUP[j+1] == '.'
-        || emailUP[teup-1] == '.'
-        || strchr(emailUP, '.') == NULL )
+        if((isalpha(emailUP[j])==0 && emailUP[j] != '.')
+            || (emailUP[j] == '.' && emailUP[j+1] == '.')
+            || emailUP[teup-1] == '.'
+            || strchr(emailUP, '.') == NULL )
             return 0;
     }
-    // Email valido se passar por todos os testes
+    /* Email valido se passar por todos os testes*/
     return 1;
 }
 
@@ -332,13 +330,13 @@ int ValidarTelefone(int i){
       }
    }
    telefonetemp[k] = '\0';
-    // Inicialmente já é invalido se for vazio.
+    /* Inicialmente já é invalido se for vazio.*/
     if( strlen(telefonetemp) == 0 )
         return 1;
-    // Inicialmente já é invalido se for menor que 8.
+    /* Inicialmente já é invalido se for menor que 8.*/
     if( strlen(telefonetemp) <= 7 )
         return 0;
-    // checando casos validos.
+    /* checando casos validos.*/
     if( strlen(telefonetemp) == 15 || strlen(telefonetemp) == 16) {
         for(j=0; j<strlen(telefonetemp); j++){
             if(j==0){
@@ -360,18 +358,21 @@ int ValidarTelefone(int i){
     }
     if( strlen(telefonetemp) == 12 || strlen(telefonetemp) == 13) {
         for(j=0; j<strlen(telefonetemp); j++){
-            if(j==0)
+            if(j==0){
                 if(telefonetemp[j] != '(')
                     return 0;
-            else
-            if(j==3)
-                if(telefonetemp[j] != ')')
-                    return 0;
-            else
+                else{
+                    if(j==3)
+                        if(telefonetemp[j] != ')')
+                            return 0;
+                    }
+            }
+            else{
                 if(isdigit(telefonetemp[j]) == 0)
                     return 0;
-        }
+                }
         return 1;
+        }
     }
     if(strlen(telefonetemp) == 8 || strlen(telefonetemp) == 9) {
         for(j=0; j<strlen(telefonetemp); j++){
@@ -443,39 +444,37 @@ void VerAgenda(){
 /* Apaga um contato */
 void ApagaContato(){
     printf("\nDigite o primeiro nome do contato que deseja apagar:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].nome);
     NomeMaiuscula();
     printf("\nDigite o sobrenome do contato que deseja apagar:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].sobrenome);
     SobrenomeMaiuscula();
-    if ( ExisteContato() != -1 )
-    {
-        int j;
-        for (j=ExisteContato(); j<total; j++)
-            agenda[j]=agenda[j+1];
+    if ( ExisteContato() != -1 ){
+        agenda[ExisteContato()] = agenda[total-1];
         total--;
+        Ordenar();
         system("cls");
         printf("\n Registro apagado \n\n\n");
         Visualizacao();
-    }
+        }
     else {
         system("cls");
         printf("\n Contato nao existe\n\n\n");
         Visualizacao();
-    }
+        }
 }
 
 /* Atualiza um contato */
 void AtualizaContato(){
     int i, checkalt=0;
     printf("\nDigite o primeiro nome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].nome);
     NomeMaiuscula();
     printf("\nDigite o sobrenome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].sobrenome);
     SobrenomeMaiuscula();
     for (i=0; i<total ; i++){
@@ -564,7 +563,7 @@ void Ordenar(){
 /* Busca Binaria pelo nome */
 void BuscaNomeBinaria(){
     printf("\nDigite o primeiro nome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].nome);
     NomeMaiuscula();
     system("cls");
@@ -588,9 +587,9 @@ int BuscaBinaria(int e, int d){
 
 /* Mostra todos os contatos com o mesmo nome */
 void EncNome(){
-    int i, j, k=0;
+    int i, k=0;
     printf("\nDigite o primeiro nome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].nome);
     NomeMaiuscula();
     for (i=0 ; i<total ; i++){
@@ -600,7 +599,6 @@ void EncNome(){
                 }
             }
     system("cls");
-    NavegarAgenda(i);
     if(k!=0)
         printf("\nTodos os contatos de nome: '%s' foram mostrados.\n\n", agenda[total].nome);
     else
@@ -612,14 +610,13 @@ void EncNome(){
 void EncSobrenome(){
     int i, k=0;
     printf("\nDigite o sobrenome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].sobrenome);
     SobrenomeMaiuscula();
     for (i=0 ; i<total ; i++){
         if (strcmp(agenda[i].sobrenome, agenda[total].sobrenome) == 0)
             VerContato(i);
     }
-    NavegarAgenda(i);
     system("cls");
     if(k!=0)
         printf("\nTodos os contatos de sobrenome: '%s' foram mostrados.\n\n", agenda[total].sobrenome);
@@ -631,11 +628,11 @@ void EncSobrenome(){
 /*Busca por um contato especifico*/
 void EncNomeSobrenome(){
     printf("\nDigite o primeiro nome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].nome);
     NomeMaiuscula();
     printf("\nDigite o sobrenome do contato:\n");
-    fflush(stdin);
+    fflush(stdin); /* Limpa o buffer de entrada */
     gets(agenda[total].sobrenome);
     SobrenomeMaiuscula();
     if(ExisteContato()==-1){
@@ -644,6 +641,5 @@ void EncNomeSobrenome(){
         Visualizacao();
     } else
         VerContato(ExisteContato());
-        NavegarAgenda(ExisteContato());
 }
 
